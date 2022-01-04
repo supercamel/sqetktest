@@ -5,15 +5,17 @@
 #include <stdarg.h>
 #include <sqstdaux.h>
 #include <stdio.h>
-
+#include <chrono>
+using namespace std::chrono;
 using namespace std;
 
-typedef etk::experimental::MemPool<1024*100> PoolType;
-PoolType* pool;
+typedef etk::experimental::BlockyPool<1024*100> PoolType;
+//typedef etk::experimental::Heap PoolType;
+PoolType pool;
 
 void *sq_vm_malloc(SQUnsignedInteger size)
 { 
-    return pool->alloc(size); 
+    return pool.alloc(size); 
 }
 
 void *sq_vm_realloc(
@@ -21,12 +23,12 @@ void *sq_vm_realloc(
         SQUnsignedInteger SQ_UNUSED_ARG(oldsize), 
         SQUnsignedInteger size)
 { 
-    return pool->realloc(p, size); 
+    return pool.realloc(p, size, oldsize); 
 }
 
 void sq_vm_free(void *p, SQUnsignedInteger SQ_UNUSED_ARG(size))
 { 
-    pool->free(p); 
+    pool.free(p, size); 
 }
 
 
@@ -48,17 +50,23 @@ void errorfunc(HSQUIRRELVM v, const SQChar* s,...)
 }
 
 int main() {
-    pool = new PoolType();
-    pool->begin();
+    //PoolType pool);
+    //pool->begin();
 
     HSQUIRRELVM vm = sq_open(1024);
     sqstd_seterrorhandlers(vm);
     sq_setprintfunc(vm, printfunc, errorfunc);
 
     //sqstd_register_iolib(vm);
-
     sq_pushroottable(vm);
+	auto start = high_resolution_clock::now();
     sqstd_dofile(vm, "test.nut", true, true);
+	auto stop = high_resolution_clock::now();
 
+	auto duration = duration_cast<microseconds>(stop - start);
+	  
+	// To get the value of duration use the count()
+	// // member function on the duration object
+	cout << duration.count()/1000000.0 << endl;
 }
 

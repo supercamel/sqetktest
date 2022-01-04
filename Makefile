@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-c -g -Wall -std=c++17 -pthread -I../EmbeddedToolKit/inc \
-	   -I./squirrel -DSQ_EXCLUDE_DEFAULT_MEMFUNCTIONS
+	   -I./squirrel -O3 -DSQ_EXCLUDE_DEFAULT_MEMFUNCTIONS
 
 LDFLAGS= -lpthread
 SOURCES=$(wildcard *.cpp) $(wildcard ./squirrel/*.cpp)

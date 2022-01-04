@@ -21,10 +21,9 @@ function isprime(n) {
 
 j <- 0;
 s <- "";
-for(j = 1000000; j < 2000000; j++) {
+for(j = 0; j < 2000000; j++) {
     if(isprime(j)) {
         s = j + " is prime\n";
-        print(s);
     }
 }
 
